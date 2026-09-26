@@ -1,0 +1,18 @@
+{
+  "id": "knowplot-example",
+  "title": "KnowPlot example scene",
+  "canvas": {"width": 900, "height": 300, "background": "#FFFFFF"},
+  "elements": [
+    {"id": "template-name", "type": "text", "x": 34, "y": 25, "w": 830, "h": 42, "text": "KnowPlot · editable research figure", "fontFamily": "Arial", "fontSize": 27, "color": "#1C2023"},
+    {"id": "main-divider", "type": "rect", "x": 34, "y": 76, "w": 830, "h": 2, "fill": "#B6C7D1", "stroke": "none"},
+    {"id": "reference-box", "type": "rect", "x": 65, "y": 125, "w": 205, "h": 82, "radius": 9, "fill": "#F4F1F7", "stroke": "#AA8FAE", "strokeWeight": 2},
+    {"id": "reference-text", "type": "text", "x": 84, "y": 151, "w": 167, "h": 32, "text": "Reference images", "fontFamily": "Arial", "fontSize": 20, "color": "#1C2023", "align": "CENTER"},
+    {"id": "design-box", "type": "rect", "x": 349, "y": 125, "w": 205, "h": 82, "radius": 9, "fill": "#F0F6F9", "stroke": "#7EA4B8", "strokeWeight": 2},
+    {"id": "design-text", "type": "text", "x": 369, "y": 151, "w": 165, "h": 32, "text": "DESIGN.md", "fontFamily": "Arial", "fontSize": 20, "color": "#1C2023", "align": "CENTER"},
+    {"id": "figma-box", "type": "rect", "x": 633, "y": 125, "w": 205, "h": 82, "radius": 9, "fill": "#F3F7EF", "stroke": "#91A97F", "strokeWeight": 2},
+    {"id": "figma-text", "type": "text", "x": 654, "y": 151, "w": 163, "h": 32, "text": "Figma layers", "fontFamily": "Arial", "fontSize": 20, "color": "#1C2023", "align": "CENTER"},
+    {"id": "reference-to-design", "type": "arrow", "x1": 282, "y1": 166, "x2": 337, "y2": 166, "stroke": "#1C2023", "weight": 2},
+    {"id": "design-to-figma", "type": "arrow", "x1": 566, "y1": 166, "x2": 621, "y2": 166, "stroke": "#1C2023", "weight": 2}
+  ],
+  "delete": []
+}

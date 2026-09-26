@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+configs/model_config.yaml
+personal_data/
+test_data_*/
+figma_incremental/scene.json
+figma_incremental/figma-preview*.png
+figma_incremental/assets/
+figma_incremental/tmp*/

@@ -1,0 +1,28 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{font:13px/1.5 Inter,Arial,"Microsoft YaHei",sans-serif;color:#25272b;background:#fff}*{box-sizing:border-box}body{margin:0;padding:18px}h1{font-size:17px;margin:0 0 4px}p{margin:0 0 14px;color:#60646c}.row{display:flex;gap:8px;align-items:center;margin:9px 0}button{border:1px solid #c8ccd1;background:#fff;border-radius:7px;padding:8px 12px;color:#23262a;cursor:pointer}button.primary{background:#1f68da;border-color:#1f68da;color:#fff}button:disabled{opacity:.55;cursor:not-allowed}input[type=file]{width:100%;border:1px dashed #b6bac2;border-radius:8px;padding:10px;font:inherit}textarea{width:100%;height:125px;border:1px solid #c8ccd1;border-radius:7px;padding:9px;font:11px/1.45 Consolas,monospace;resize:vertical}.switch{display:flex;gap:7px;align-items:center}.status{min-height:36px;border-radius:7px;padding:9px;background:#f5f6f7;color:#4b5159;margin:10px 0;white-space:pre-wrap}.status.error{background:#fff1ed;color:#aa3a2d}.status.ok{background:#eef8f3;color:#22724d}.hint{font-size:11px;color:#727780}.preview{border:1px solid #e3e5e9;background:#f8f8f8;min-height:140px;display:grid;place-items:center;overflow:hidden}.preview img{max-width:100%;max-height:250px;object-fit:contain}details{margin:14px 0;color:#626873}summary{cursor:pointer}
+</style></head><body>
+<h1>KnowPlot Live</h1><p>已连接本地绘图工作区。Codex 修改后，图层会自动更新并生成预览。</p>
+<div class="row"><button class="primary" id="fetch">立即同步</button><label class="switch"><input id="auto" type="checkbox" checked> 自动同步</label></div>
+<div class="hint">保持此窗口打开；每 2 秒检查一次。</div>
+<div id="status" class="status">等待场景文件。</div>
+<div class="preview" id="preview"><span class="hint">应用后显示 Figma 实际导出的预览</span></div>
+<details><summary>手动输入（仅用于本地连接故障时）</summary><div class="row"><input id="file" type="file" accept=".json,application/json"></div><textarea id="source" spellcheck="false" placeholder="粘贴场景 JSON"></textarea><div class="row"><button id="apply">应用手动内容</button></div></details>
+<script>
+const $=id=>document.getElementById(id), url='http://localhost:8765/scene';
+let busy=false,lastRemote='';
+function status(s,cls=''){ $('status').textContent=s;$('status').className='status '+cls; }
+function send(scene){if(busy)return;busy=true;$('apply').disabled=true;status('正在更新 Figma 图层…');parent.postMessage({pluginMessage:{type:'apply',scene}},'*');}
+async function parseAndSend(s){try{const scene=JSON.parse(s);for(const e of scene.elements||[]){if(e.type==='image'){const r=await fetch('http://localhost:8765/asset/'+encodeURIComponent(e.asset),{cache:'no-store'});if(!r.ok)throw Error('素材 '+e.asset+' HTTP '+r.status);e.imageBytes=Array.from(new Uint8Array(await r.arrayBuffer()))}}send(scene)}catch(e){lastRemote='';status('场景读取失败：'+e.message,'error')}}
+$('apply').onclick=()=>parseAndSend($('source').value);
+$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;const s=await f.text();$('source').value=s;parseAndSend(s)};
+async function fetchLocal(){try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const s=await r.text();if(s===lastRemote)return;lastRemote=s;$('source').value=s;parseAndSend(s)}catch(e){status('本地服务不可用：'+e.message,'error')}}
+$('fetch').onclick=()=>{lastRemote='';fetchLocal()};
+setInterval(()=>{if($('auto').checked&&!busy)fetchLocal()},2000);
+fetchLocal();
+window.onmessage=e=>{const m=e.data.pluginMessage;if(!m||m.type!=='result')return;busy=false;$('apply').disabled=false;if(!m.ok){lastRemote='';status('更新失败：'+m.error,'error');return}
+ const s=m.stats;status(`新建 ${s.created} · 更新 ${s.updated} · 未变 ${s.unchanged} · 删除 ${s.deleted}`+(m.warnings.length?'\n注意：'+m.warnings.join('；'):''),m.warnings.length?'error':'ok');
+ const blob=new Blob([new Uint8Array(m.preview)],{type:'image/png'}), src=URL.createObjectURL(blob);$('preview').innerHTML='';const img=new Image();img.src=src;img.onload=()=>URL.revokeObjectURL(src);$('preview').appendChild(img);
+ fetch('http://localhost:8765/preview',{method:'POST',body:blob}).catch(()=>{});
+};
+</script></body></html>

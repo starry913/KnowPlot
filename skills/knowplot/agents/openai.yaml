@@ -1,0 +1,4 @@
+interface:
+  display_name: "KnowPlot 科研绘图"
+  short_description: "参考图结构借鉴、DESIGN.md 规划与 Figma 分层绘制"
+  default_prompt: "用 $knowplot 根据我的个人图库和论文内容设计一张新的科研图。"
